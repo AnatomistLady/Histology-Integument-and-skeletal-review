@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A&P 1 Progressive Mastery Engine: Histology, Integument & Bone</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    body {
+      background: #0f172a;
+      color: #f1f5f9;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 16px 12px 60px;
+    }
+    .wrapper {
+      width: 100%;
+      max-width: 740px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    header {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-top: 4px solid #38bdf8;
+      border-radius: 10px;
+      padding: 16px;
+    }
+    h1 {
+      font-size: 1.25rem;
+      color: #f8fafc;
+      font-weight: 700;
+    }
+    .subtitle {
+      font-size: 0.82rem;
+      color: #94a3b8;
+      margin-top: 4px;
+    }
+
+    /* 3-TIER PROGRESSION BANNER */
+    .banner {
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: 1px solid transparent;
+    }
+    .banner.tier-1 {
+      background: #1e1e38;
+      border-color: #4338ca;
+      color: #c7d2fe;
+    }
+    .banner.tier-2 {
+      background: #2e1065;
+      border-color: #9333ea;
+      color: #f3e8ff;
+    }
+    .banner.tier-3 {
+      background: #064e3b;
+      border-color: #10b981;
+      color: #ecfdf5;
+    }
+
+    /* DASHBOARD */
+    .dashboard {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 14px;
+    }
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+    .stat-card {
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 6px;
+      padding: 8px 4px;
+    }
+    .stat-label {
+      font-size: 0.65rem;
+      color: #94a3b8;
+      text-transform: uppercase;
+      font-weight: 700;
+      display: block;
+    }
+    .stat-val {
+      font-size: 1.05rem;
+      color: #38bdf8;
+      font-weight: 800;
+      margin-top: 2px;
+    }
+    .bar-bg {
+      background: #334155;
+      height: 8px;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #38bdf8, #22c55e);
+      width: 0%;
+      transition: width 0.3s;
+    }
+    .round-status {
+      background: #032b43;
+      border: 1px solid #0284c7;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #e0f2fe;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* QUESTIONS */
+    .quiz-feed {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .q-box {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .q-title {
+      background: #0f172a;
+      border-bottom: 1px solid #334155;
+      padding: 10px 14px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #94a3b8;
+      display: flex;
+      justify-content: space-between;
+    }
+    .q-main {
+      padding: 16px;
+    }
+    .q-text {
+      font-size: 0.98rem;
+      font-weight: 600;
+      line-height: 1.45;
+      color: #f8fafc;
+      margin-bottom: 14px;
+    }
+    .options-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .opt-item {
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 6px;
+      padding: 12px 14px;
+      font-size: 0.9rem;
+      color: #e2e8f0;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: background 0.1s;
+    }
+    .opt-item:hover:not(.disabled) {
+      background: #1e293b;
+      border-color: #38bdf8;
+    }
+    .opt-dot {
+      width: 16px;
+      height: 16px;
+      min-width: 16px;
+      border: 2px solid #64748b;
+      border-radius: 50%;
+    }
+    .opt-item.picked-right {
+      background: #064e3b !important;
+      border-color: #10b981 !important;
+      color: #ecfdf5 !important;
+    }
+    .opt-item.picked-right .opt-dot {
+      background: #10b981;
+      border-color: #10b981;
+    }
+    .opt-item.picked-wrong {
+      background: #7f1d1d !important;
+      border-color: #ef4444 !important;
+      color: #fef2f2 !important;
+    }
+    .opt-item.picked-wrong .opt-dot {
+      background: #ef4444;
+      border-color: #ef4444;
+    }
+    .opt-item.disabled {
+      cursor: default;
+    }
+    .expl-banner {
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      line-height: 1.4;
+      display: none;
+    }
+    .expl-banner.show-right {
+      display: block;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid #10b981;
+      color: #a7f3d0;
+    }
+    .expl-banner.show-wrong {
+      display: block;
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid #ef4444;
+      color: #fca5a5;
+    }
+
+    .control-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10px;
+    }
+    .btn-new-round {
+      background: #0284c7;
+      color: #ffffff;
+      border: 1px solid #38bdf8;
+      border-radius: 6px;
+      padding: 12px 20px;
+      font-size: 0.92rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn-new-round:hover {
+      background: #0369a1;
+    }
+    .btn-clear-mem {
+      background: transparent;
+      border: 1px solid #334155;
+      color: #64748b;
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 0.72rem;
+      cursor: pointer;
+    }
+    .btn-clear-mem:hover {
+      color: #ef4444;
+      border-color: #ef4444;
+    }
+    #confettiCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 9999;
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="confettiCanvas"></canvas>
+
+  <div class="wrapper">
+    <header>
+      <h1>A&P 1 Progressive Mastery Engine</h1>
+      <div class="subtitle">OpenStax Anatomy & Physiology 2e • Histology, Integument & Bone</div>
+    </header>
+
+    <div id="bannerBox" class="banner tier-1">
+      <span id="bannerMsg">🔒 <strong>Stage 1: Histology</strong> (Master 20/25 to unlock Integument)</span>
+      <span id="bannerCounter">0 / 20</span>
+    </div>
+
+    <div class="dashboard">
+      <div class="stat-grid">
+        <div class="stat-card">
+          <span class="stat-label">Total Mastery</span>
+          <span id="dashMastery" class="stat-val">0%</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Histology</span>
+          <span id="dashHisto" class="stat-val">0 / 25</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Integument</span>
+          <span id="dashSkin" class="stat-val">🔒 Locked</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Skeletal</span>
+          <span id="dashBone" class="stat-val">🔒 Locked</span>
+        </div>
+      </div>
+      <div class="bar-bg">
+        <div id="dashBar" class="bar-fill"></div>
+      </div>
+    </div>
+
+    <div class="round-status">
+      <span>Current Quiz: <span id="roundProgress">0 / 10</span></span>
+      <span>Score: <span id="roundScore">0%</span></span>
+    </div>
+
+    <div id="quizFeed" class="quiz-feed"></div>
+
+    <div class="control-row">
+      <button class="btn-clear-mem" id="btnReset" onclick="resetAllProgress()">Reset Progress</button>
+      <button class="btn-new-round" id="btnNewRound" onclick="runDynamicQuiz()">Generate New 10-Q Quiz ↻</button>
+    </div>
+  </div>
+
+  <script>
+    /* 75-QUESTION BANK: 25 HISTOLOGY (1-25), 25 INTEGUMENT (26-50), 25 SKELETAL (51-75) */
+    const BANK = [
+      /* =========================================================
+         TIER 1: CHAPTER 4 - HISTOLOGY & TISSUES (IDs 1 - 25)
+         ========================================================= */
+      { id: 1, chapter: 4, category: "Ch 4: Epithelium", prompt: "A delicate single layer of flat, scale-like cells specialized for rapid diffusion and filtration in lung alveoli and renal glomeruli is:", options: ["Simple squamous epithelium", "Stratified squamous epithelium", "Simple cuboidal epithelium", "Transitional epithelium"], answer: "Simple squamous epithelium", expl: "Simple squamous epithelium provides minimal diffusion distance, ideal for rapid gas and solute exchange." },
+      { id: 2, chapter: 4, category: "Ch 4: Epithelium", prompt: "Which epithelial tissue lines areas subject to severe physical abrasion and friction, such as the skin epidermis and esophagus?", options: ["Stratified squamous epithelium", "Simple columnar epithelium", "Transitional epithelium", "Simple cuboidal epithelium"], answer: "Stratified squamous epithelium", expl: "Stratified squamous epithelium features multiple protective layers where apical cells can slough off without damaging deeper layers." },
+      { id: 3, chapter: 4, category: "Ch 4: Epithelium", prompt: "A single layer of tall, column-shaped cells equipped with microvilli that specialized for absorption and secretion throughout the GI tract is:", options: ["Simple columnar epithelium", "Stratified columnar epithelium", "Simple cuboidal epithelium", "Pseudostratified epithelium"], answer: "Simple columnar epithelium", expl: "Simple columnar epithelium lines the stomach through rectum, utilizing apical microvilli to maximize absorption." },
+      { id: 4, chapter: 4, category: "Ch 4: Epithelium", prompt: "Which epithelium appears multi-layered because cell nuclei rest at varying depths, but all cells actually anchor directly to the basement membrane?", options: ["Pseudostratified ciliated columnar epithelium", "Stratified cuboidal epithelium", "Transitional epithelium", "Stratified squamous epithelium"], answer: "Pseudostratified ciliated columnar epithelium", expl: "Pseudostratified epithelium is a true simple epithelium where varying cellular heights give a false stratified appearance." },
+      { id: 5, chapter: 4, category: "Ch 4: Epithelium", prompt: "The specialized stratified epithelium lining the ureters and urinary bladder that transitions from dome-shaped to flattened cells under tension is:", options: ["Transitional epithelium (urothelium)", "Pseudostratified epithelium", "Stratified cuboidal epithelium", "Simple squamous epithelium"], answer: "Transitional epithelium (urothelium)", expl: "Transitional epithelium (urothelium) allows hollow urinary organs to distend significantly without fluid leakage." },
+      { id: 6, chapter: 4, category: "Ch 4: Epithelial Cells", prompt: "Mucus-secreting unicellular exocrine glands distributed within columnar and pseudostratified epithelia are called:", options: ["Goblet cells", "Mast cells", "Fibroblasts", "Chondrocytes"], answer: "Goblet cells", expl: "Goblet cells produce mucin, which hydrates to form protective mucus lubricating respiratory and GI tracts." },
+      { id: 7, chapter: 4, category: "Ch 4: Basement Membrane", prompt: "The thin, non-cellular extracellular support sheet anchoring epithelial tissue to the underlying connective tissue is the:", options: ["Basement membrane", "Apical border", "Stratum lucidum", "Perichondrium"], answer: "Basement membrane", expl: "The basement membrane consists of the basal and reticular laminae, reinforcing epithelial sheets against tearing." },
+      { id: 8, chapter: 4, category: "Ch 4: Cell Junctions", prompt: "Which intercellular junctions form an impermeable seal fusing neighboring epithelial membranes to prevent fluid from leaking between cells?", options: ["Tight junctions (zonula occludens)", "Gap junctions", "Desmosomes", "Hemidesmosomes"], answer: "Tight junctions (zonula occludens)", expl: "Tight junctions form continuous watertight seals around cells to block paracellular solute leakage." },
+      { id: 9, chapter: 4, category: "Ch 4: Cell Junctions", prompt: "Spot-weld anchoring junctions reinforced by intermediate keratin filaments that prevent mechanical shearing across epithelial and cardiac tissues are:", options: ["Desmosomes", "Gap junctions", "Tight junctions", "Hemidesmosomes"], answer: "Desmosomes", expl: "Desmosomes distribute mechanical pull across sheets of cells, preventing mechanical tearing during stress." },
+      { id: 10, chapter: 4, category: "Ch 4: Cell Junctions", prompt: "Communicating junctions composed of transmembrane connexon cylinders allowing direct passage of ions and electrical signals between adjacent cells are:", options: ["Gap junctions", "Tight junctions", "Desmosomes", "Occluding junctions"], answer: "Gap junctions", expl: "Gap junctions synchronize metabolic and electrical activity, crucial in cardiac and smooth muscle syncytia." },
+      { id: 11, chapter: 4, category: "Ch 4: Connective Tissue Cells", prompt: "The primary resident cell type of connective tissue proper that synthesizes ground substance and collagen fibers is the:", options: ["Fibroblast", "Macrophage", "Mast cell", "Chondrocyte"], answer: "Fibroblast", expl: "Fibroblasts are active, spindle-shaped cells that secrete extracellular matrix components." },
+      { id: 12, chapter: 4, category: "Ch 4: Connective Tissue Cells", prompt: "Connective tissue cells that release histamine and heparin to trigger vasodilation during localized inflammatory responses are:", options: ["Mast cells", "Fibroblasts", "Adipocytes", "Osteoclasts"], answer: "Mast cells", expl: "Mast cells reside along blood vessels and degranulate histamine upon injury to initiate acute inflammation." },
+      { id: 13, chapter: 4, category: "Ch 4: Connective Fibers", prompt: "Extracellular matrix protein fibers with higher tensile strength than steel that resist longitudinal pulling forces in ligaments and tendons are:", options: ["Collagen fibers", "Elastic fibers", "Reticular fibers", "Keratin fibers"], answer: "Collagen fibers", expl: "Tough, cross-linked collagen fibers provide high tensile strength to resist longitudinal stretch." },
+      { id: 14, chapter: 4, category: "Ch 4: Connective Fibers", prompt: "Wavy, rubber-like protein fibers containing elastin that allow tissues (such as large arteries and lungs) to recoil after stretching are:", options: ["Elastic fibers", "Collagen fibers", "Reticular fibers", "Actin fibers"], answer: "Elastic fibers", expl: "Elastic fibers stretch and recoil passively, maintaining arterial blood pressure and lung compliance." },
+      { id: 15, chapter: 4, category: "Ch 4: Connective Fibers", prompt: "Delicate, branching networks of collagenous fibrils that form the soft internal stroma of the spleen, lymph nodes, and liver are:", options: ["Reticular fibers", "Collagen bundles", "Elastic networks", "Intermediate cables"], answer: "Reticular fibers", expl: "Reticular fibers create intricate meshworks supporting free immune cells in lymphoid organs." },
+      { id: 16, chapter: 4, category: "Ch 4: Loose Connective", prompt: "The most widespread loose connective tissue in the body, serving as a packing material wrapping organs and anchoring epithelia, is:", options: ["Areolar connective tissue", "Dense regular connective tissue", "Reticular tissue", "Elastic tissue"], answer: "Areolar connective tissue", expl: "Areolar tissue cushions organs, binds epithelia, and holds fluid in its loose gel-like ground substance." },
+      { id: 17, chapter: 4, category: "Ch 4: Loose Connective", prompt: "Which loose connective tissue is specialized for triglyceride energy storage, shock absorption, and thermal insulation?", options: ["Adipose tissue", "Areolar tissue", "Reticular tissue", "Dense regular tissue"], answer: "Adipose tissue", expl: "Adipose tissue consists of packed adipocytes containing lipid droplets for fuel storage and insulation." },
+      { id: 18, chapter: 4, category: "Ch 4: Dense Connective", prompt: "Tendons and aponeuroses that withstand tensile pull along a single predictable axis are composed of:", options: ["Dense regular connective tissue", "Dense irregular connective tissue", "Areolar tissue", "Hyaline cartilage"], answer: "Dense regular connective tissue", expl: "Dense regular tissue features parallel collagen bundles arranged along lines of mechanical pull." },
+      { id: 19, chapter: 4, category: "Ch 4: Dense Connective", prompt: "Which dense connective tissue features interwoven collagen bundles running in multiple planes to resist multidirectional tension in the dermis?", options: ["Dense irregular connective tissue", "Dense regular connective tissue", "Elastic cartilage", "Adipose tissue"], answer: "Dense irregular connective tissue", expl: "Dense irregular tissue withstands mechanical forces exerted from multiple random directions." },
+      { id: 20, chapter: 4, category: "Ch 4: Cartilage", prompt: "Mature cartilage cells that reside inside fluid-filled matrix pockets called lacunae are:", options: ["Chondrocytes", "Osteocytes", "Fibroblasts", "Chondroblasts"], answer: "Chondrocytes", expl: "Chondrocytes are mature cartilage cells maintaining the avascular matrix from within lacunae." },
+      { id: 21, chapter: 4, category: "Ch 4: Cartilage", prompt: "The most abundant cartilage in the human body, providing glassy smooth articular joint caps and tracheal rings, is:", options: ["Hyaline cartilage", "Fibrocartilage", "Elastic cartilage", "Calcified cartilage"], answer: "Hyaline cartilage", expl: "Hyaline cartilage contains glassy, uniform matrices that reduce joint friction and support the airway." },
+      { id: 22, chapter: 4, category: "Ch 4: Cartilage", prompt: "Which cartilage type contains dense rows of collagen bundles capable of withstanding heavy compressive shock in intervertebral discs and the pubic symphysis?", options: ["Fibrocartilage", "Hyaline cartilage", "Elastic cartilage", "Areolar cartilage"], answer: "Fibrocartilage", expl: "Fibrocartilage provides high compression resistance and shock absorption in weight-bearing joints." },
+      { id: 23, chapter: 4, category: "Ch 4: Muscle Tissue", prompt: "Which muscle tissue is characterized by multinucleated, cylindrical fibers with visible striations under voluntary somatic control?", options: ["Skeletal muscle", "Cardiac muscle", "Smooth muscle", "Visceral muscle"], answer: "Skeletal muscle", expl: "Skeletal muscle fibers are voluntary, striated, multinucleated cylinders anchored to bone." },
+      { id: 24, chapter: 4, category: "Ch 4: Muscle Tissue", prompt: "Branching involuntary striated muscle cells joined end-to-end by intercalated discs containing gap junctions are found in:", options: ["Cardiac muscle", "Skeletal muscle", "Smooth muscle", "Peristaltic muscle"], answer: "Cardiac muscle", expl: "Cardiac muscle consists of branched, uninucleated striated myocytes synchronized by intercalated discs." },
+      { id: 25, chapter: 4, category: "Ch 4: Glandular Secretion", prompt: "Exocrine glands that release their secretions by packaging products into vesicles discharged via exocytosis without cell damage (e.g., salivary glands) are:", options: ["Merocrine (eccrine) glands", "Holocrine glands", "Apocrine glands", "Endocrine glands"], answer: "Merocrine (eccrine) glands", expl: "Merocrine glands discharge secretory vesicles via exocytosis, leaving the secretory cell intact." },
+
+      /* =========================================================
+         TIER 2: CHAPTER 5 - INTEGUMENTARY SYSTEM (IDs 26 - 50)
+         ========================================================= */
+      { id: 26, chapter: 5, category: "Ch 5: Epidermis", prompt: "Which stratum of the epidermis consists of a single layer of cuboidal mitotically active stem cells that continuously generate new keratinocytes?", options: ["Stratum basale", "Stratum spinosum", "Stratum granulosum", "Stratum corneum"], answer: "Stratum basale", expl: "The stratum basale (germinativum) is the deepest layer attached to the basement membrane containing dividing stem cells." },
+      { id: 27, chapter: 5, category: "Ch 5: Epidermis", prompt: "Which epidermal layer is found exclusively in thick skin (palms and soles)?", options: ["Stratum lucidum", "Stratum spinosum", "Stratum granulosum", "Stratum corneum"], answer: "Stratum lucidum", expl: "The stratum lucidum is a smooth, translucent layer of dead cells present only in thick skin." },
+      { id: 28, chapter: 5, category: "Ch 5: Epidermal Cells", prompt: "Which dendritic cells reside in the stratum spinosum and function as antigen-presenting macrophages?", options: ["Langerhans cells", "Merkel cells", "Melanocytes", "Fibroblasts"], answer: "Langerhans cells", expl: "Langerhans cells are immune sentinels that phagocytize pathogens and activate defensive immune responses." },
+      { id: 29, chapter: 5, category: "Ch 5: Pigmentation", prompt: "The primary pigment synthesized in basal cells to shield nuclear DNA from UV radiation is:", options: ["Melanin", "Carotene", "Hemoglobin", "Keratohyalin"], answer: "Melanin", expl: "Melanin is transferred to keratinocytes to form a protective umbrella over nuclear DNA." },
+      { id: 30, chapter: 5, category: "Ch 5: Sensation", prompt: "Which sensory receptor cells in the stratum basale detect light touch and texture?", options: ["Merkel cells", "Pacinian corpuscles", "Meissner corpuscles", "Ruffini endings"], answer: "Merkel cells", expl: "Merkel cells connect with sensory nerve endings in the epidermis to perceive light touch." },
+      { id: 31, chapter: 5, category: "Ch 5: Dermis", prompt: "The superficial 20% of the dermis made of loose areolar connective tissue with dermal papillae is the:", options: ["Papillary layer", "Reticular layer", "Hypodermis", "Stratum basale"], answer: "Papillary layer", expl: "The papillary layer contains loose areolar connective tissue, capillary loops, and defensive cells." },
+      { id: 32, chapter: 5, category: "Ch 5: Dermis", prompt: "The deep 80% of the dermis composed of dense irregular connective tissue with prominent collagen bundles is the:", options: ["Reticular layer", "Papillary layer", "Subcutaneous layer", "Epidermal stratum corneum"], answer: "Reticular layer", expl: "The reticular dermis contains thick dense irregular collagen networks providing high tensile strength." },
+      { id: 33, chapter: 5, category: "Ch 5: Hypodermis", prompt: "The subcutaneous layer underlying the dermis that stores adipose tissue and anchors skin to fascia is the:", options: ["Hypodermis", "Reticular dermis", "Stratum basale", "Papillary layer"], answer: "Hypodermis", expl: "The hypodermis (superficial fascia) insulates the body and anchors the skin to underlying muscle." },
+      { id: 34, chapter: 5, category: "Ch 5: Cutaneous Glands", prompt: "Exocrine glands that release an oily secretion (sebum) via holocrine secretion to lubricate skin and inhibit bacteria are:", options: ["Sebaceous glands", "Eccrine sweat glands", "Apocrine sweat glands", "Ceruminous glands"], answer: "Sebaceous glands", expl: "Sebaceous glands rupture entire cells to lubricate skin with lipid-rich sebum." },
+      { id: 35, chapter: 5, category: "Ch 5: Cutaneous Glands", prompt: "Coiled tubular glands distributed across the body that produce watery perspiration for thermoregulation are:", options: ["Eccrine sweat glands", "Apocrine sweat glands", "Sebaceous glands", "Ceruminous glands"], answer: "Eccrine sweat glands", expl: "Eccrine sweat glands secrete a watery electrolyte solution directly onto the skin surface to cool the body." },
+      { id: 36, chapter: 5, category: "Ch 5: Cutaneous Glands", prompt: "Which large sweat glands become active at puberty in the axillary and groin areas, causing body odor upon bacterial breakdown?", options: ["Apocrine sweat glands", "Eccrine sweat glands", "Holocrine glands", "Mammary glands"], answer: "Apocrine sweat glands", expl: "Apocrine glands empty viscous organic secretions that produce odor when bacteria feed on them." },
+      { id: 37, chapter: 5, category: "Ch 5: Sensation", prompt: "Large, encapsulated sensory receptors deep in the dermis and hypodermis that detect deep pressure and vibration are:", options: ["Pacinian corpuscles", "Meissner corpuscles", "Merkel discs", "Free nerve endings"], answer: "Pacinian corpuscles", expl: "Pacinian (lamellar) corpuscles are onion-like mechanoreceptors tuned to deep pressure and vibration." },
+      { id: 38, chapter: 5, category: "Ch 5: Clinical Signs", prompt: "A bluish tint to the skin and mucous membranes resulting from poorly oxygenated hemoglobin in dermal blood flow is termed:", options: ["Cyanosis", "Erythema", "Jaundice", "Pallor"], answer: "Cyanosis", expl: "Cyanosis reflects deficient systemic arterial oxygenation, appearing clinically as a dark blue or purple hue in skin and lips." },
+      { id: 39, chapter: 5, category: "Ch 5: Metabolic Functions", prompt: "Keratinocytes use solar UV radiation to convert a cholesterol derivative into cholecalciferol, the precursor to:", options: ["Vitamin D", "Melatonin", "Keratin", "Vitamin A"], answer: "Vitamin D", expl: "Cholecalciferol is synthesized in the skin and modified by the liver and kidneys into active Vitamin D." },
+      { id: 40, chapter: 5, category: "Ch 5: Keratinization", prompt: "In which epidermal layer do cells begin dying, accumulate keratohyalin, and release water-proofing glycolipids?", options: ["Stratum granulosum", "Stratum basale", "Stratum spinosum", "Stratum lucidum"], answer: "Stratum granulosum", expl: "In the stratum granulosum, keratinocytes disintegrate their nuclei and produce water-resistant glycolipid seals." },
+      { id: 41, chapter: 5, category: "Ch 5: Clinical Burns", prompt: "A burn injury damaging the entire epidermis and upper dermis, marked by localized pain, erythema, and blisters, is a:", options: ["Second-degree burn", "First-degree burn", "Third-degree burn", "Fourth-degree burn"], answer: "Second-degree burn", expl: "Second-degree burns penetrate into the dermis, causing fluid blisters between the epidermis and dermis." },
+      { id: 42, chapter: 5, category: "Ch 5: Oncology", prompt: "The most dangerous form of skin cancer, originating from pigment-producing cells and tracked by ABCDE rules, is:", options: ["Melanoma", "Basal cell carcinoma", "Squamous cell carcinoma", "Kaposi sarcoma"], answer: "Melanoma", expl: "Melanoma arises from melanocytes and has high potential for metastasis." },
+      { id: 43, chapter: 5, category: "Ch 5: Dermis", prompt: "Predominant directional orientations of collagen bundles in the reticular dermis followed by surgeons are:", options: ["Cleavage lines", "Friction ridges", "Flexure lines", "Dermal papillae"], answer: "Cleavage lines", expl: "Cleavage (Langer) lines represent dermal collagen alignment; incisions parallel to them heal with less scarring." },
+      { id: 44, chapter: 5, category: "Ch 5: Chemical Barrier", prompt: "The low pH of cutaneous secretions (sebum and sweat) that forms a chemical film retarding bacterial multiplication on the skin surface is known as the:", options: ["Acid mantle", "Mucous sheath", "Keratohyalin shield", "Epidermal biofilm"], answer: "Acid mantle", expl: "The acidic surface film (pH ~4.5 to 5.5) creates a hostile chemical environment that retards bacterial growth." },
+      { id: 45, chapter: 5, category: "Ch 5: Sensation", prompt: "Small egg-shaped touch mechanoreceptors residing within dermal papillae that respond to light touch and low-frequency vibrations are:", options: ["Meissner (tactile) corpuscles", "Pacinian corpuscles", "Ruffini endings", "Nociceptors"], answer: "Meissner (tactile) corpuscles", expl: "Meissner corpuscles reside within dermal papillae right below the epidermis to sense discriminative touch and slip." },
+      { id: 46, chapter: 5, category: "Ch 5: Thermoregulation", prompt: "When body temperature rises, dermal blood vessels respond by ________ to release heat to the environment.", options: ["Dilating (vasodilation)", "Constricting (vasoconstriction)", "Clotting", "Collapsing"], answer: "Dilating (vasodilation)", expl: "Dermal arterioles dilate to send warm blood closer to the skin surface for radiant heat loss." },
+      { id: 47, chapter: 5, category: "Ch 5: Epidermis", prompt: "Which cell junctions tightly connect adjacent keratinocytes in the stratum spinosum, causing a spiny histological look?", options: ["Desmosomes", "Gap junctions", "Tight junctions", "Hemidesmosomes"], answer: "Desmosomes", expl: "Desmosomes are anchoring junctions that bridge neighboring intermediate filaments together." },
+      { id: 48, chapter: 5, category: "Ch 5: Glands", prompt: "Modified apocrine sweat glands in the external ear canal that secrete earwax are:", options: ["Ceruminous glands", "Mammary glands", "Sebaceous glands", "Eccrine glands"], answer: "Ceruminous glands", expl: "Ceruminous glands secrete earwax (cerumen) to trap dirt and insects entering the ear canal." },
+      { id: 49, chapter: 5, category: "Ch 5: Epidermis", prompt: "The outermost layer of 20 to 30 layers of dead, flattened keratinized cells that continuously slough off is the:", options: ["Stratum corneum", "Stratum granulosum", "Stratum spinosum", "Stratum lucidum"], answer: "Stratum corneum", expl: "The stratum corneum is the durable, keratin-filled protective outer barrier of the skin." },
+      { id: 50, chapter: 5, category: "Ch 5: Clinical Pathology", prompt: "An autoimmune disease where rapid epidermal proliferation causes thick, silvery scaly plaques on red skin is:", options: ["Psoriasis", "Eczema", "Basal cell carcinoma", "Alopecia"], answer: "Psoriasis", expl: "Psoriasis results from hyperactive immune signaling driving keratinocytes to divide too quickly." },
+
+      /* =========================================================
+         TIER 3: CHAPTER 6 - SKELETAL SYSTEM (IDs 51 - 75)
+         ========================================================= */
+      { id: 51, chapter: 6, category: "Ch 6: Bone Cells", prompt: "Large multinucleated cells derived from white blood cell lines that secrete acid to dissolve bone matrix are:", options: ["Osteoclasts", "Osteoblasts", "Osteocytes", "Osteogenic cells"], answer: "Osteoclasts", expl: "Osteoclasts resorb mineralized bone tissue by releasing hydrochloric acid and lysosomal enzymes." },
+      { id: 52, chapter: 6, category: "Ch 6: Bone Cells", prompt: "Bone-building cells that synthesize and secrete organic bone matrix (osteoid) are:", options: ["Osteoblasts", "Osteoclasts", "Osteocytes", "Chondrocytes"], answer: "Osteoblasts", expl: "Osteoblasts deposit collagen and proteoglycans (osteoid) and initiate calcification." },
+      { id: 53, chapter: 6, category: "Ch 6: Bone Cells", prompt: "Mature bone cells entrapped inside lacunae that maintain matrix and sense mechanical stress are:", options: ["Osteocytes", "Osteoclasts", "Osteoprogenitor cells", "Fibroblasts"], answer: "Osteocytes", expl: "Osteocytes monitor physical strain and communicate through canaliculi to direct remodeling." },
+      { id: 54, chapter: 6, category: "Ch 6: Bone Cells", prompt: "Mesenchymal stem cells located in the periosteum and endosteum that divide to create osteoblasts are:", options: ["Osteogenic cells", "Osteocytes", "Osteoclasts", "Chondroblasts"], answer: "Osteogenic cells", expl: "Osteogenic (osteoprogenitor) cells are the only bone cells that undergo cellular mitosis." },
+      { id: 55, chapter: 6, category: "Ch 6: Histology", prompt: "The basic microscopic cylindrical structural unit of compact bone is the:", options: ["Osteon", "Trabecula", "Canaliculus", "Lacuna"], answer: "Osteon", expl: "An osteon (Haversian system) is the cylindrical unit composed of concentric lamellae around a central canal." },
+      { id: 56, chapter: 6, category: "Ch 6: Histology", prompt: "The longitudinal canal located in the center of an osteon containing blood vessels and nerves is the:", options: ["Central canal", "Perforating canal", "Canaliculus", "Medullary cavity"], answer: "Central canal", expl: "The central (Haversian) canal carries blood vessels and nerve fibers through the core of the osteon." },
+      { id: 57, chapter: 6, category: "Ch 6: Histology", prompt: "Canals that run perpendicular to the bone axis connecting periosteal vessels to central canals are:", options: ["Perforating canals", "Haversian canals", "Canaliculi", "Medullary clefts"], answer: "Perforating canals", expl: "Perforating (Volkmann) canals route blood vessels from outside the bone into central canals." },
+      { id: 58, chapter: 6, category: "Ch 6: Histology", prompt: "Tiny micro-canals radiating between lacunae that allow osteocytes to share nutrients via gap junctions are:", options: ["Canaliculi", "Lamellae", "Central canals", "Sinusoids"], answer: "Canaliculi", expl: "Canaliculi contain the cytoplasmic extensions of osteocytes to pass ions and nutrients." },
+      { id: 59, chapter: 6, category: "Ch 6: Histology", prompt: "The lattice-like network of microscopic bony plates and struts found in spongy bone is called:", options: ["Trabeculae", "Osteons", "Concentric lamellae", "Perforating fibers"], answer: "Trabeculae", expl: "Spongy bone lacks complete osteons; its matrix organizes into stress-aligned struts called trabeculae." },
+      { id: 60, chapter: 6, category: "Ch 6: Anatomy", prompt: "The tubular shaft of a typical long bone containing the yellow marrow cavity is the:", options: ["Diaphysis", "Epiphysis", "Metaphysis", "Apophysis"], answer: "Diaphysis", expl: "The diaphysis is the long central cylinder of compact bone enclosing the medullary cavity." },
+      { id: 61, chapter: 6, category: "Ch 6: Anatomy", prompt: "The expanded bulbous ends of a long bone filled with spongy bone and red marrow are the:", options: ["Epiphyses", "Diaphyses", "Metaphyses", "Endostea"], answer: "Epiphyses", expl: "The epiphyses are the knobby proximal and distal joint-forming ends of long bones." },
+      { id: 62, chapter: 6, category: "Ch 6: Membranes", prompt: "The tough fibrous connective tissue membrane covering all outer bone surfaces except articular joints is the:", options: ["Periosteum", "Endosteum", "Perichondrium", "Synovium"], answer: "Periosteum", expl: "The periosteum contains an outer fibrous protective layer and an inner osteogenic layer." },
+      { id: 63, chapter: 6, category: "Ch 6: Membranes", prompt: "The delicate vascular membrane lining the internal marrow cavities, trabeculae, and central canals is the:", options: ["Endosteum", "Periosteum", "Perichondrium", "Sharpey matrix"], answer: "Endosteum", expl: "The endosteum is an active osteogenic layer lining the inside surfaces of bone." },
+      { id: 64, chapter: 6, category: "Ch 6: Membranes", prompt: "Collagen fibers that firmly anchor the periosteum into the outer circumferential lamellae are:", options: ["Perforating (Sharpey) fibers", "Trabeculae", "Tendons", "Canaliculi"], answer: "Perforating (Sharpey) fibers", expl: "Perforating (Sharpey) fibers lock the periosteum and attached tendons directly into the bone matrix." },
+      { id: 65, chapter: 6, category: "Ch 6: Matrix", prompt: "The mineral salt crystal component of bone matrix providing compressive hardness is:", options: ["Hydroxyapatite", "Osteoid collagen", "Chondroitin sulfate", "Calcium carbonate"], answer: "Hydroxyapatite", expl: "Calcium phosphate crystals (hydroxyapatite) form the hard inorganic mineral component of bone." },
+      { id: 66, chapter: 6, category: "Ch 6: Ossification", prompt: "The bone formation process where flat cranial bones form directly inside embryonic mesenchymal membranes is:", options: ["Intramembranous ossification", "Endochondral ossification", "Appositional growth", "Remodeling"], answer: "Intramembranous ossification", expl: "Intramembranous ossification builds bone directly within mesenchymal sheets without a cartilage model." },
+      { id: 67, chapter: 6, category: "Ch 6: Ossification", prompt: "During endochondral bone formation, the primary ossification center first appears in the:", options: ["Center of diaphysis", "Proximal epiphysis", "Distal epiphysis", "Articular cartilage"], answer: "Center of diaphysis", expl: "Blood vessels penetrate the perichondrium at the mid-shaft to initiate the primary ossification center." },
+      { id: 68, chapter: 6, category: "Ch 6: Growth", prompt: "The hyaline cartilage plate located in the metaphysis that allows growing bones to lengthen is the:", options: ["Epiphyseal plate", "Articular cartilage", "Trabecular zone", "Epiphyseal line"], answer: "Epiphyseal plate", expl: "Chondrocytes divide and push the epiphysis away from the diaphysis, lengthening the bone." },
+      { id: 69, chapter: 6, category: "Ch 6: Growth", prompt: "The process by which bones increase in width and thickness beneath the periosteum is called:", options: ["Appositional growth", "Endochondral elongation", "Interstitial growth", "Fibrosis"], answer: "Appositional growth", expl: "Osteoblasts under the periosteum lay down new matrix while osteoclasts widen the marrow cavity." },
+      { id: 70, chapter: 6, category: "Ch 6: Homeostasis", prompt: "Which hormone is released by the parathyroid glands during hypocalcemia to stimulate osteoclast activity?", options: ["Parathyroid hormone (PTH)", "Calcitonin", "Thyroxine", "Growth hormone"], answer: "Parathyroid hormone (PTH)", expl: "PTH triggers osteoclasts to dissolve bone and release calcium into the bloodstream." },
+      { id: 71, chapter: 6, category: "Ch 6: Homeostasis", prompt: "Which thyroid hormone inhibits osteoclasts and encourages bone deposition during high blood calcium levels?", options: ["Calcitonin", "Parathyroid hormone", "Calcitriol", "Estrogen"], answer: "Calcitonin", expl: "Calcitonin lowers elevated blood calcium levels by dampening osteoclast activity." },
+      { id: 72, chapter: 6, category: "Ch 6: Physiology", prompt: "The principle stating that bones adapt and grow stronger along lines of mechanical stress is:", options: ["Wolff's law", "Starling's law", "The Octet rule", "Laplace's rule"], answer: "Wolff's law", expl: "Wolff's law explains how physical stress and mechanical forces thicken bone cortex along tension lines." },
+      { id: 73, chapter: 6, category: "Ch 6: Fracture Repair", prompt: "What is the correct sequential order of bone fracture repair?", options: [
+        "Hematoma -> Soft callus -> Bony callus -> Remodeling",
+        "Soft callus -> Hematoma -> Bony callus -> Remodeling",
+        "Bony callus -> Hematoma -> Soft callus -> Remodeling",
+        "Hematoma -> Bony callus -> Soft callus -> Remodeling"
+      ], answer: "Hematoma -> Soft callus -> Bony callus -> Remodeling", expl: "Fracture repair progresses from a hematoma to a fibrocartilaginous callus, hard bony callus, and remodeling." },
+      { id: 74, chapter: 6, category: "Ch 6: Pathology", prompt: "A condition where bone resorption outpaces deposition, making bones fragile and porous, is:", options: ["Osteoporosis", "Osteomalacia", "Osteogenesis imperfecta", "Paget's disease"], answer: "Osteoporosis", expl: "Osteoporosis involves substantial loss of bone mineral density, elevating fracture risk." },
+      { id: 75, chapter: 6, category: "Ch 6: Classification", prompt: "The patella is classified as which specific bone type that develops inside a tendon to reduce friction?", options: ["Sesamoid bone", "Pneumatic bone", "Flat bone", "Irregular bone"], answer: "Sesamoid bone", expl: "Sesamoid bones form inside tendons near joints to optimize mechanical pull and minimize tendon wear." }
+    ];
+
+    let sessionMastered = [];
+    let currentRoundQuestions = [];
+    let roundAnswers = {};
+    let roundCorrect = 0;
+
+    function getProgressionStage() {
+      const histoCount = sessionMastered.filter(id => id <= 25).length;
+      const skinCount = sessionMastered.filter(id => id > 25 && id <= 50).length;
+
+      if (histoCount < 20) return 1; // Histology only
+      if (skinCount < 20) return 2;  // Integumentary unlocked
+      return 3;                      // Skeletal unlocked (all active)
+    }
+
+    function runDynamicQuiz() {
+      const feed = document.getElementById("quizFeed");
+      feed.innerHTML = "";
+
+      const stage = getProgressionStage();
+      let pool = [];
+
+      if (stage === 1) {
+        pool = BANK.filter(q => q.chapter === 4).sort(() => Math.random() - 0.5).slice(0, 10);
+      } else if (stage === 2) {
+        const s4 = BANK.filter(q => q.chapter === 4).sort(() => Math.random() - 0.5).slice(0, 3);
+        const s5 = BANK.filter(q => q.chapter === 5).sort(() => Math.random() - 0.5).slice(0, 7);
+        pool = s4.concat(s5).sort(() => Math.random() - 0.5);
+      } else {
+        const s4 = BANK.filter(q => q.chapter === 4).sort(() => Math.random() - 0.5).slice(0, 3);
+        const s5 = BANK.filter(q => q.chapter === 5).sort(() => Math.random() - 0.5).slice(0, 3);
+        const s6 = BANK.filter(q => q.chapter === 6).sort(() => Math.random() - 0.5).slice(0, 4);
+        pool = s4.concat(s5, s6).sort(() => Math.random() - 0.5);
+      }
+
+      currentRoundQuestions = pool;
+      roundAnswers = {};
+      roundCorrect = 0;
+      updateUI();
+
+      currentRoundQuestions.forEach((q, idx) => {
+        const card = document.createElement("div");
+        card.className = "q-box";
+
+        const head = document.createElement("div");
+        head.className = "q-title";
+        head.innerHTML = "<span>Question " + (idx + 1) + " • <strong style='color:#38bdf8;'>" + q.category + "</strong></span><span>1 pt</span>";
+        card.appendChild(head);
+
+        const body = document.createElement("div");
+        body.className = "q-main";
+
+        const p = document.createElement("div");
+        p.className = "q-text";
+        p.textContent = q.prompt;
+        body.appendChild(p);
+
+        const og = document.createElement("div");
+        og.className = "options-group";
+
+        const expl = document.createElement("div");
+        expl.className = "expl-banner";
+
+        const opts = [...q.options].sort(() => Math.random() - 0.5);
+        opts.forEach(opt => {
+          const item = document.createElement("div");
+          item.className = "opt-item";
+          item.innerHTML = "<div class='opt-dot'></div><span>" + opt + "</span>";
+
+          item.onclick = function() {
+            if (roundAnswers[q.id] !== undefined) return;
+            roundAnswers[q.id] = opt;
+
+            Array.from(og.children).forEach(c => c.classList.add("disabled"));
+
+            if (opt === q.answer) {
+              roundCorrect++;
+              const oldStage = getProgressionStage();
+              if (!sessionMastered.includes(q.id)) sessionMastered.push(q.id);
+              const newStage = getProgressionStage();
+
+              item.classList.add("picked-right");
+              expl.className = "expl-banner show-right";
+              expl.innerHTML = "<strong>✓ Correct!</strong> " + q.expl;
+              shootConfetti();
+
+              if (oldStage === 1 && newStage === 2) {
+                alert("🎉 Stage 1 Complete! You mastered 80% of Histology! The Integumentary System is now unlocked!");
+              } else if (oldStage === 2 && newStage === 3) {
+                alert("🎉 Stage 2 Complete! You mastered 80% of Integument! The Skeletal System is now unlocked!");
+              }
+            } else {
+              item.classList.add("picked-wrong");
+              expl.className = "expl-banner show-wrong";
+              expl.innerHTML = "<strong>✗ Incorrect.</strong> " + q.expl;
+            }
+            updateUI();
+          };
+          og.appendChild(item);
+        });
+
+        body.appendChild(og);
+        body.appendChild(expl);
+        card.appendChild(body);
+        feed.appendChild(card);
+      });
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function updateUI() {
+      const histoCount = sessionMastered.filter(id => id <= 25).length;
+      const skinCount = sessionMastered.filter(id => id > 25 && id <= 50).length;
+      const boneCount = sessionMastered.filter(id => id > 50).length;
+      const totalCount = sessionMastered.length;
+      const stage = getProgressionStage();
+
+      document.getElementById("dashTotal").textContent = totalCount + " / 75";
+      document.getElementById("dashMastery").textContent = Math.round((totalCount / 75) * 100) + "%";
+      document.getElementById("dashHisto").textContent = histoCount + " / 25";
+      document.getElementById("dashBar").style.width = Math.round((totalCount / 75) * 100) + "%";
+
+      const bBox = document.getElementById("bannerBox");
+      const bMsg = document.getElementById("bannerMsg");
+      const bCtr = document.getElementById("bannerCounter");
+      const sSkin = document.getElementById("dashSkin");
+      const sBone = document.getElementById("dashBone");
+
+      if (stage === 1) {
+        bBox.className = "banner tier-1";
+        bMsg.innerHTML = "🔒 <strong>Stage 1: Histology</strong> (Master 20/25 to unlock Integument)";
+        bCtr.textContent = histoCount + " / 20";
+        sSkin.textContent = "🔒 Locked";
+        sSkin.style.color = "#94a3b8";
+        sBone.textContent = "🔒 Locked";
+        sBone.style.color = "#94a3b8";
+      } else if (stage === 2) {
+        bBox.className = "banner tier-2";
+        bMsg.innerHTML = "🔓 <strong>Stage 2: Integumentary Active</strong> (Master 20/25 skin to unlock Bone)";
+        bCtr.textContent = skinCount + " / 20";
+        sSkin.textContent = skinCount + " / 25";
+        sSkin.style.color = "#c084fc";
+        sBone.textContent = "🔒 Locked";
+        sBone.style.color = "#94a3b8";
+      } else {
+        bBox.className = "banner tier-3";
+        bMsg.innerHTML = "🌟 <strong>Stage 3: Full Mastery Mode</strong> (Histology, Integument & Bone All Active)";
+        bCtr.textContent = "UNLOCKED";
+        sSkin.textContent = skinCount + " / 25";
+        sSkin.style.color = "#38bdf8";
+        sBone.textContent = boneCount + " / 25";
+        sBone.style.color = "#38bdf8";
+      }
+
+      const ansCount = Object.keys(roundAnswers).length;
+      document.getElementById("roundProgress").textContent = ansCount + " / " + currentRoundQuestions.length;
+      document.getElementById("roundScore").textContent = (ansCount === 0 ? 0 : Math.round((roundCorrect / ansCount) * 100)) + "%";
+    }
+
+    function resetAllProgress() {
+      if (confirm("Reset current progress back to Stage 1 (Histology)?")) {
+        sessionMastered = [];
+        runDynamicQuiz();
+      }
+    }
+
+    /* CONFETTI */
+    const canvas = document.getElementById("confettiCanvas");
+    const ctx = canvas.getContext("2d");
+    let parts = [];
+    let timer = null;
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+
+    function shootConfetti() {
+      const colors = ["#38bdf8", "#4ade80", "#facc15", "#fb923c", "#c084fc", "#22d3ee"];
+      for (let i = 0; i < 35; i++) {
+        parts.push({
+          x: window.innerWidth / 2 + (Math.random() * 200 - 100),
+          y: window.innerHeight * 0.35 + (Math.random() * 60 - 30),
+          vx: (Math.random() - 0.5) * 10,
+          vy: Math.random() * -8 - 3,
+          size: Math.random() * 8 + 6,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          alpha: 1
+        });
+      }
+      if (!timer) animateConfetti();
+    }
+
+    function animateConfetti() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let i = parts.length - 1; i >= 0; i--) {
+        const p = parts[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.35;
+        p.alpha -= 0.02;
+
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = Math.max(p.alpha, 0);
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size / 2, 0, Math.PI * 2);
+        ctx.fill();
+
+        if (p.alpha <= 0 || p.y > canvas.height) parts.splice(i, 1);
+      }
+      if (parts.length > 0) timer = requestAnimationFrame(animateConfetti);
+      else timer = null;
+    }
+
+    // Initialize with direct DOM render
+    runDynamicQuiz();
+  </script>
+</body>
+</html>
