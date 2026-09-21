@@ -44,6 +44,8 @@
       color: #94a3b8;
       margin-top: 4px;
     }
+
+    /* 3-TIER PROGRESSION BANNER */
     .banner {
       border-radius: 8px;
       padding: 12px 14px;
@@ -69,6 +71,8 @@
       border-color: #10b981;
       color: #ecfdf5;
     }
+
+    /* DASHBOARD */
     .dashboard {
       background: #1e293b;
       border: 1px solid #334155;
@@ -124,6 +128,8 @@
       display: flex;
       justify-content: space-between;
     }
+
+    /* QUESTIONS */
     .quiz-feed {
       display: flex;
       flex-direction: column;
@@ -226,6 +232,7 @@
       border: 1px solid #ef4444;
       color: #fca5a5;
     }
+
     .control-row {
       display: flex;
       justify-content: space-between;
@@ -276,7 +283,7 @@
   <div class="wrapper">
     <header>
       <h1>A&P 1 Progressive Mastery Engine</h1>
-      <div class="subtitle">OpenStax Anatomy & Physiology 2e • Histology, Integument & Bone (Release v5.0)</div>
+      <div class="subtitle">OpenStax Anatomy & Physiology 2e • Histology, Integument & Bone (Persistent Progress)</div>
     </header>
 
     <div id="bannerBox" class="banner tier-1">
@@ -313,7 +320,6 @@
       <span>Score: <span id="roundScore">0%</span></span>
     </div>
 
-    <!-- PRE-RENDERED STATIC CARDS (Visible immediately regardless of script state) -->
     <div id="quizFeed" class="quiz-feed">
       <!-- Q1 -->
       <div class="q-box" id="card_1">
@@ -528,7 +534,7 @@
       { id: 49, chapter: 5, category: "Ch 5: Epidermis", prompt: "The outermost layer of 20 to 30 layers of dead, flattened keratinized cells that continuously slough off is the:", options: ["Stratum corneum", "Stratum granulosum", "Stratum spinosum", "Stratum lucidum"], answer: "Stratum corneum", expl: "The stratum corneum is the tough, keratinized protective outer layer." },
       { id: 50, chapter: 5, category: "Ch 5: Clinical Pathology", prompt: "An autoimmune disease where rapid epidermal proliferation causes thick, silvery scaly plaques on red skin is:", options: ["Psoriasis", "Eczema", "Basal cell carcinoma", "Alopecia"], answer: "Psoriasis", expl: "Psoriasis causes accelerated cell division and plaque formation." },
 
-      /* TIER 3: CHAPTER 6 - SKELETAL SYSTEM (IDs 51 - 75) */
+      /* TIER 3: CHAPTER 6 - SKELETAL (IDs 51 - 75) */
       { id: 51, chapter: 6, category: "Ch 6: Bone Cells", prompt: "Large multinucleated cells derived from white blood cell lines that secrete acid to dissolve bone matrix are:", options: ["Osteoclasts", "Osteoblasts", "Osteocytes", "Osteogenic cells"], answer: "Osteoclasts", expl: "Osteoclasts resorb mineralized matrix via acid and enzymes." },
       { id: 52, chapter: 6, category: "Ch 6: Bone Cells", prompt: "Bone-building cells that synthesize and secrete organic bone matrix (osteoid) are:", options: ["Osteoblasts", "Osteoclasts", "Osteocytes", "Chondrocytes"], answer: "Osteoblasts", expl: "Osteoblasts deposit osteoid and initiate mineralization." },
       { id: 53, chapter: 6, category: "Ch 6: Bone Cells", prompt: "Mature bone cells entrapped inside lacunae that maintain matrix and sense mechanical stress are:", options: ["Osteocytes", "Osteoclasts", "Osteoprogenitor cells", "Fibroblasts"], answer: "Osteocytes", expl: "Osteocytes monitor physical stress and direct bone remodeling." },
@@ -561,14 +567,38 @@
       { id: 75, chapter: 6, category: "Ch 6: Classification", prompt: "The patella is classified as which specific bone type that develops inside a tendon to reduce friction?", options: ["Sesamoid bone", "Pneumatic bone", "Flat bone", "Irregular bone"], answer: "Sesamoid bone", expl: "Sesamoid bones form inside tendons to optimize mechanical pull." }
     ];
 
-    let sessionMastered = [];
+    /* PERSISTENT STORAGE ENGINE */
+    const STORAGE_KEY = "ap1_mastery_75bank_v1";
+
+    function loadSavedMastered() {
+      try {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed)) return parsed;
+        }
+      } catch (e) {}
+      return [];
+    }
+
+    function saveMasteredID(id) {
+      let current = loadSavedMastered();
+      if (!current.includes(id)) {
+        current.push(id);
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(current));
+        } catch (e) {}
+      }
+    }
+
     let activeRoundIDs = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
     let roundAnswers = {};
     let roundCorrect = 0;
 
     function getProgressionStage() {
-      const histoCount = sessionMastered.filter(id => id <= 25).length;
-      const skinCount = sessionMastered.filter(id => id > 25 && id <= 50).length;
+      const saved = loadSavedMastered();
+      const histoCount = saved.filter(id => id <= 25).length;
+      const skinCount = saved.filter(id => id > 25 && id <= 50).length;
       if (histoCount < 20) return 1;
       if (skinCount < 20) return 2;
       return 3;
@@ -598,7 +628,7 @@
         if (isRight) {
           roundCorrect++;
           const oldStage = getProgressionStage();
-          if (!sessionMastered.includes(qId)) sessionMastered.push(qId);
+          saveMasteredID(qId);
           const newStage = getProgressionStage();
 
           expl.className = "expl-banner show-right";
@@ -686,10 +716,11 @@
     }
 
     function updateUI() {
-      const histoCount = sessionMastered.filter(id => id <= 25).length;
-      const skinCount = sessionMastered.filter(id => id > 25 && id <= 50).length;
-      const boneCount = sessionMastered.filter(id => id > 50).length;
-      const totalCount = sessionMastered.length;
+      const saved = loadSavedMastered();
+      const histoCount = saved.filter(id => id <= 25).length;
+      const skinCount = saved.filter(id => id > 25 && id <= 50).length;
+      const boneCount = saved.filter(id => id > 50).length;
+      const totalCount = saved.length;
       const stage = getProgressionStage();
 
       document.getElementById("dashTotal").textContent = totalCount + " / 75";
@@ -735,8 +766,12 @@
     }
 
     function resetAllProgress() {
-      if (confirm("Reset progress back to Stage 1 (Histology)?")) {
-        sessionMastered = [];
+      if (confirm("Reset saved progress back to Stage 1 (Histology)?")) {
+        try {
+          localStorage.removeItem(STORAGE_KEY);
+        } catch (e) {}
+        roundAnswers = {};
+        roundCorrect = 0;
         generateNextRound();
       }
     }
@@ -791,6 +826,7 @@
       else timer = null;
     }
 
+    // Load initial persistent UI values
     updateUI();
   </script>
 </body>
