@@ -134,12 +134,14 @@
       display: flex;
       flex-direction: column;
       gap: 14px;
+      min-height: 200px;
     }
     .q-box {
       background: #1e293b;
       border: 1px solid #334155;
       border-radius: 10px;
       overflow: hidden;
+      display: block;
     }
     .q-title {
       background: #0f172a;
@@ -328,11 +330,8 @@
   </div>
 
   <script>
-    /* 75-QUESTION BANK: 25 HISTOLOGY (1-25), 25 INTEGUMENT (26-50), 25 SKELETAL (51-75) */
     const BANK = [
-      /* =========================================================
-         TIER 1: CHAPTER 4 - HISTOLOGY & TISSUES (IDs 1 - 25)
-         ========================================================= */
+      /* TIER 1: CHAPTER 4 - HISTOLOGY & TISSUES (IDs 1 - 25) */
       { id: 1, chapter: 4, category: "Ch 4: Epithelium", prompt: "A delicate single layer of flat, scale-like cells specialized for rapid diffusion and filtration in lung alveoli and renal glomeruli is:", options: ["Simple squamous epithelium", "Stratified squamous epithelium", "Simple cuboidal epithelium", "Transitional epithelium"], answer: "Simple squamous epithelium", expl: "Simple squamous epithelium provides minimal diffusion distance, ideal for rapid gas and solute exchange." },
       { id: 2, chapter: 4, category: "Ch 4: Epithelium", prompt: "Which epithelial tissue lines areas subject to severe physical abrasion and friction, such as the skin epidermis and esophagus?", options: ["Stratified squamous epithelium", "Simple columnar epithelium", "Transitional epithelium", "Simple cuboidal epithelium"], answer: "Stratified squamous epithelium", expl: "Stratified squamous epithelium features multiple protective layers where apical cells can slough off without damaging deeper layers." },
       { id: 3, chapter: 4, category: "Ch 4: Epithelium", prompt: "A single layer of tall, column-shaped cells equipped with microvilli that specialized for absorption and secretion throughout the GI tract is:", options: ["Simple columnar epithelium", "Stratified columnar epithelium", "Simple cuboidal epithelium", "Pseudostratified epithelium"], answer: "Simple columnar epithelium", expl: "Simple columnar epithelium lines the stomach through rectum, utilizing apical microvilli to maximize absorption." },
@@ -359,9 +358,7 @@
       { id: 24, chapter: 4, category: "Ch 4: Muscle Tissue", prompt: "Branching involuntary striated muscle cells joined end-to-end by intercalated discs containing gap junctions are found in:", options: ["Cardiac muscle", "Skeletal muscle", "Smooth muscle", "Peristaltic muscle"], answer: "Cardiac muscle", expl: "Cardiac muscle consists of branched, uninucleated striated myocytes synchronized by intercalated discs." },
       { id: 25, chapter: 4, category: "Ch 4: Glandular Secretion", prompt: "Exocrine glands that release their secretions by packaging products into vesicles discharged via exocytosis without cell damage (e.g., salivary glands) are:", options: ["Merocrine (eccrine) glands", "Holocrine glands", "Apocrine glands", "Endocrine glands"], answer: "Merocrine (eccrine) glands", expl: "Merocrine glands discharge secretory vesicles via exocytosis, leaving the secretory cell intact." },
 
-      /* =========================================================
-         TIER 2: CHAPTER 5 - INTEGUMENTARY SYSTEM (IDs 26 - 50)
-         ========================================================= */
+      /* TIER 2: CHAPTER 5 - INTEGUMENTARY SYSTEM (IDs 26 - 50) */
       { id: 26, chapter: 5, category: "Ch 5: Epidermis", prompt: "Which stratum of the epidermis consists of a single layer of cuboidal mitotically active stem cells that continuously generate new keratinocytes?", options: ["Stratum basale", "Stratum spinosum", "Stratum granulosum", "Stratum corneum"], answer: "Stratum basale", expl: "The stratum basale (germinativum) is the deepest layer attached to the basement membrane containing dividing stem cells." },
       { id: 27, chapter: 5, category: "Ch 5: Epidermis", prompt: "Which epidermal layer is found exclusively in thick skin (palms and soles)?", options: ["Stratum lucidum", "Stratum spinosum", "Stratum granulosum", "Stratum corneum"], answer: "Stratum lucidum", expl: "The stratum lucidum is a smooth, translucent layer of dead cells present only in thick skin." },
       { id: 28, chapter: 5, category: "Ch 5: Epidermal Cells", prompt: "Which dendritic cells reside in the stratum spinosum and function as antigen-presenting macrophages?", options: ["Langerhans cells", "Merkel cells", "Melanocytes", "Fibroblasts"], answer: "Langerhans cells", expl: "Langerhans cells are immune sentinels that phagocytize pathogens and activate defensive immune responses." },
@@ -388,9 +385,7 @@
       { id: 49, chapter: 5, category: "Ch 5: Epidermis", prompt: "The outermost layer of 20 to 30 layers of dead, flattened keratinized cells that continuously slough off is the:", options: ["Stratum corneum", "Stratum granulosum", "Stratum spinosum", "Stratum lucidum"], answer: "Stratum corneum", expl: "The stratum corneum is the durable, keratin-filled protective outer barrier of the skin." },
       { id: 50, chapter: 5, category: "Ch 5: Clinical Pathology", prompt: "An autoimmune disease where rapid epidermal proliferation causes thick, silvery scaly plaques on red skin is:", options: ["Psoriasis", "Eczema", "Basal cell carcinoma", "Alopecia"], answer: "Psoriasis", expl: "Psoriasis results from hyperactive immune signaling driving keratinocytes to divide too quickly." },
 
-      /* =========================================================
-         TIER 3: CHAPTER 6 - SKELETAL SYSTEM (IDs 51 - 75)
-         ========================================================= */
+      /* TIER 3: CHAPTER 6 - SKELETAL SYSTEM (IDs 51 - 75) */
       { id: 51, chapter: 6, category: "Ch 6: Bone Cells", prompt: "Large multinucleated cells derived from white blood cell lines that secrete acid to dissolve bone matrix are:", options: ["Osteoclasts", "Osteoblasts", "Osteocytes", "Osteogenic cells"], answer: "Osteoclasts", expl: "Osteoclasts resorb mineralized bone tissue by releasing hydrochloric acid and lysosomal enzymes." },
       { id: 52, chapter: 6, category: "Ch 6: Bone Cells", prompt: "Bone-building cells that synthesize and secrete organic bone matrix (osteoid) are:", options: ["Osteoblasts", "Osteoclasts", "Osteocytes", "Chondrocytes"], answer: "Osteoblasts", expl: "Osteoblasts deposit collagen and proteoglycans (osteoid) and initiate calcification." },
       { id: 53, chapter: 6, category: "Ch 6: Bone Cells", prompt: "Mature bone cells entrapped inside lacunae that maintain matrix and sense mechanical stress are:", options: ["Osteocytes", "Osteoclasts", "Osteoprogenitor cells", "Fibroblasts"], answer: "Osteocytes", expl: "Osteocytes monitor physical strain and communicate through canaliculi to direct remodeling." },
@@ -432,9 +427,9 @@
       const histoCount = sessionMastered.filter(id => id <= 25).length;
       const skinCount = sessionMastered.filter(id => id > 25 && id <= 50).length;
 
-      if (histoCount < 20) return 1; // Histology only
-      if (skinCount < 20) return 2;  // Integumentary unlocked
-      return 3;                      // Skeletal unlocked (all active)
+      if (histoCount < 20) return 1;
+      if (skinCount < 20) return 2;
+      return 3;
     }
 
     function runDynamicQuiz() {
@@ -528,7 +523,6 @@
         card.appendChild(body);
         feed.appendChild(card);
       });
-      window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
     function updateUI() {
@@ -637,7 +631,7 @@
       else timer = null;
     }
 
-    // Initialize with direct DOM render
+    // Direct synchronous call after script definitions
     runDynamicQuiz();
   </script>
 </body>
